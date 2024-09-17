@@ -10,7 +10,7 @@ class CarouselAdapter(private val imageList : MutableList<Int>) :
 
 
 
-            inner class CarouselVIewHolder(private val binding: EachItemBinding)
+    inner class CarouselVIewHolder(private val binding: EachItemBinding)
                 :RecyclerView.ViewHolder(binding.root){
                     fun bind(image : Int){
                         binding.imageView.setImageResource(image)
@@ -27,10 +27,11 @@ class CarouselAdapter(private val imageList : MutableList<Int>) :
     }
 
     override fun getItemCount(): Int {
-      return imageList.size
+      return imageList.size * 100
     }
 
     override fun onBindViewHolder(holder: CarouselVIewHolder, position: Int) {
-        holder.bind(imageList[position])
+        val actualPosition = position % imageList.size
+        holder.bind(imageList[actualPosition])
     }
 }
