@@ -16,11 +16,11 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val STORAGE_PERMISSION_CODE = 100
-    private val PICK_IMAGE_REQUEST_CODE = 101
     val imageList = mutableListOf<Any>()
     private lateinit var adapter: CarouselAdapter
     private val getContent =
@@ -45,7 +45,9 @@ class MainActivity : AppCompatActivity() {
         imageList.add(R.drawable.goku_006)
         imageList.add(R.drawable.goku_007)
 
-         adapter = CarouselAdapter(imageList)
+         adapter = CarouselAdapter(imageList) {
+             position -> showDeleteConfirmationDialog(position)
+         }
 
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = CarouselLayoutManager()
@@ -59,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnSelectImg.setOnClickListener {
             if (checkPermission()) {
-                openGallery()
+                getContent.launch("image/*")
             }
         }
     }
@@ -72,21 +74,14 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openGallery()
+                getContent.launch("image/*")
             } else {
                 Toast.makeText(this, "No accept permission", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            data?.data?.let { uri ->
-                addImageToCarouse(uri)
-            }
-        }
-    }
+
 
     private fun checkPermission(): Boolean {
         val permission = Manifest.permission.READ_MEDIA_IMAGES
@@ -103,17 +98,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
-    }
-
     private fun addImageToCarouse(uri: Uri) {
         imageList.add(uri)
         adapter.notifyItemInserted(imageList.size - 1)
     }
 
+    private fun showDeleteConfirmationDialog(position: Int) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Xóa hình ảnh")
+        builder.setMessage("Bạn có chắc muốn xóa ảnh này không ?")
+        builder.setPositiveButton("Đồng ý") {
+            dialog , which -> deleteImage(position)
+        }
+        builder.setNegativeButton("Hủy") {
+            dialog , which -> dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun deleteImage(position: Int) {
+        imageList.removeAt(position)
+        adapter.notifyDataSetChanged()
+    }
 
 }
 

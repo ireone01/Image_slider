@@ -9,8 +9,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.image_slider.databinding.EachItemBinding
 import com.bumptech.glide.Glide
-class CarouselAdapter(private val imageList : MutableList<Any>) :
-        RecyclerView.Adapter<CarouselAdapter.CarouselVIewHolder>(){
+class CarouselAdapter(
+    private val imageList : MutableList<Any>,
+    private val onItemLongclick : (position:Int) -> Unit
+) : RecyclerView.Adapter<CarouselAdapter.CarouselVIewHolder>(){
 
 
 
@@ -19,7 +21,7 @@ class CarouselAdapter(private val imageList : MutableList<Any>) :
                     fun bind(image : Any){
                             Glide.with(itemView.context)
                                 .load(image)
-                                .into(itemView.findViewById<ImageView>(R.id.imageView))
+                                .into(itemView.findViewById(R.id.imageView))
                     }
                 }
 
@@ -35,5 +37,10 @@ class CarouselAdapter(private val imageList : MutableList<Any>) :
     override fun onBindViewHolder(holder: CarouselVIewHolder, position: Int) {
         val actualPosition = position % imageList.size
         holder.bind(imageList[actualPosition])
+
+        holder.itemView.setOnLongClickListener{
+            onItemLongclick(actualPosition)
+            true
+        }
     }
 }
