@@ -51,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+
 
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.appcompat:appcompat:1.7.0")

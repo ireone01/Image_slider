@@ -1,29 +1,31 @@
 package com.example.image_slider
 
+import android.media.Image
+import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.image_slider.databinding.EachItemBinding
-
-class CarouselAdapter(private val imageList : MutableList<Int>) :
+import com.bumptech.glide.Glide
+class CarouselAdapter(private val imageList : MutableList<Any>) :
         RecyclerView.Adapter<CarouselAdapter.CarouselVIewHolder>(){
 
 
 
-    inner class CarouselVIewHolder(private val binding: EachItemBinding)
-                :RecyclerView.ViewHolder(binding.root){
-                    fun bind(image : Int){
-                        binding.imageView.setImageResource(image)
+    inner class CarouselVIewHolder(itemView : View)
+                :RecyclerView.ViewHolder(itemView){
+                    fun bind(image : Any){
+                            Glide.with(itemView.context)
+                                .load(image)
+                                .into(itemView.findViewById<ImageView>(R.id.imageView))
                     }
                 }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarouselVIewHolder {
         return CarouselVIewHolder(
-            EachItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-        ))
+           LayoutInflater.from(parent.context).inflate(R.layout.each_item,parent,false))
     }
 
     override fun getItemCount(): Int {
